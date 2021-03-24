@@ -1,3 +1,15 @@
+# Ignoring .txt files (frecuently used for testing) 
+*.txt
+# but include requirements.txt for the python environment
+!requirements.txt
+
+# Grafana and Graphite performance measure and statistics
+grafana-grahite/logs/
+grafana-grahite/data/
+
+# Ignore .pickle files used for storing HIDS database
+*.pickle
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
