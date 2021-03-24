@@ -7,6 +7,9 @@
 grafana-stack/logs/
 grafana-stack/data/
 
+# IDEs
+.vscode
+
 # Ignore .pickle files used for storing HIDS database
 *.pickle
 
