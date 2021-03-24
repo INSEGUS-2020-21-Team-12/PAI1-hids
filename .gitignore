@@ -4,8 +4,8 @@
 !requirements.txt
 
 # Grafana and Graphite performance measure and statistics
-grafana-grahite/logs/
-grafana-grahite/data/
+grafana-stack/logs/
+grafana-stack/data/
 
 # Ignore .pickle files used for storing HIDS database
 *.pickle
