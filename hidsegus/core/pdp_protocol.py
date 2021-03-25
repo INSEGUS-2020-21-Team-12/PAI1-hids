@@ -2,22 +2,26 @@
 import random
 from resource import *
 from cryptography.hazmat.primitives.asymmetric import rsa
-import utils
+from hidsegus.core import utils
 
-def pdp_generate_hash(filepath):
+def rsa_hash(filepath, key_bitsize=2048):
   """Calculates the homomorphic hash of a file generating first a secure RSA private key
   
   Parameters
   ----------
       filepath : str
           The path to the file we want to calculate the homomorphic hash to
+      key_bitsize : int
+          The size of the private RSA-key (default=2048)
   Returns
   -------
       file_hmorph_hash : int
           A private homomorphic hash used to generate PDP requests for a file
       n_modulo : int
           N module for a PDP challenge"""
-  private_key = rsa.generate_private_key(public_exponent=65537,key_size=2048)
+  if key_bitsize is None: key_bitsize = 2048
+
+  private_key = rsa.generate_private_key(public_exponent=65537,key_size=key_bitsize)
       
   p_prime = private_key.private_numbers().p
   q_prime = private_key.private_numbers().q
@@ -29,7 +33,7 @@ def pdp_generate_hash(filepath):
   return hmorph_hash, n_modulo
 
 
-def pdp_request(n_modulo, hmorph_hash):
+def request(n_modulo):
   """Calculates expected result of a PDP challenge based on a randomly generated b_token
   
   Parameters
@@ -47,10 +51,9 @@ def pdp_request(n_modulo, hmorph_hash):
       expected_result : int
           Expected result for the PDP challenge calculated with the hmorph_hash"""
   b_token = random.randint(1, n_modulo-1)
-  pdp_expected_result = pow(b_token, hmorph_hash, n_modulo)
-  return b_token, n_modulo, pdp_expected_result
+  return b_token, n_modulo
 
-def pdp_response(filepath, b_token, n_modulo):
+def response(filepath, b_token, n_modulo):
   """Calculates a PDP challenge for a file based on a random B token and a N module operation
   
   Parameters
@@ -74,17 +77,28 @@ def pdp_response(filepath, b_token, n_modulo):
   print(f'Memory size (shared): {getrusage(RUSAGE_SELF).ru_ixrss}')
   return pdp_result
 
+def verification(b_token, hmorph_hash, n_modulo):
+    pdp_expected_result = pow(b_token, hmorph_hash, n_modulo)
+    return pdp_expected_result
+
+
 def pdp_test(input_filename):
     print(f'Testing PDP-Protocol for file: {input_filename}')
     
-    file_hmorph_hash, public_n_modulo = pdp_generate_hash(input_filename)
-    pdp_request_b, pdp_request_n, pdp_request_result = pdp_request(public_n_modulo, file_hmorph_hash)
-    print(f'Expected result: {pdp_request_result}')
-    print(f'Calculating response result... (This might take a while)')
-    pdp_response_result = pdp_response(input_filename, pdp_request_b, pdp_request_n)
-    print(f'Expected result: {pdp_response_result}')
-    print(f'Are they equal?: {pdp_response_result == pdp_request_result}')
+    file_hmorph_hash, public_n_modulo = rsa_hash(input_filename)
 
-pdp_test('sampledir/PAI-1-integridad.pdf')
+    pdp_request_b, pdp_request_n = request(public_n_modulo)
+    pdp_expected_result = verification(pdp_request_b, file_hmorph_hash, public_n_modulo)
+
+    print(f'Expected result: {pdp_expected_result}')
+
+    print(f'Calculating response result... (This might take a while)')
+    pdp_response_result = response(input_filename, pdp_request_b, pdp_request_n)
+    
+    print(f'Result: {pdp_response_result}')
+    print(f'Are they equal?: {pdp_response_result == pdp_expected_result}')
+
+if __name__ == '__main__':
+    pdp_test('sampledir/PAI-1-integridad.pdf')
 
 

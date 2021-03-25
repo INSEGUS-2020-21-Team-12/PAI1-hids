@@ -1,5 +1,6 @@
 # Ignoring .txt files (frecuently used for testing) 
 *.txt
+*.json
 sampledir
 # but include requirements.txt for the python environment
 !requirements.txt

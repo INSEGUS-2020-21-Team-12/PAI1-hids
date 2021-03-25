@@ -1,5 +1,6 @@
 import mmap
 import sys
+import ntpath
 def filebytes_to_int(filepath):
     """An RSA-based homomorphic hash function
     
@@ -23,6 +24,24 @@ def filebytes_to_int(filepath):
     #print(f'Memory size (unshared): {getrusage(RUSAGE_SELF).ru_idrss}')
     #print(f'Memory size (shared): {getrusage(RUSAGE_SELF).ru_ixrss}')
     return file_int
+
+def filename(filepath):
+    head, tail = ntpath.split(filepath)
+    return tail or ntpath.basename(head)
+
+def generate_jsonfilename(filepath, file_prefix):
+    head, tail = ntpath.split(filepath)
+    res = f'{file_prefix}{str(0).zfill(2)}_{tail}.json'
+    if ntpath.exists(res): 
+        for n in range(100):
+            res = f"{file_prefix}{str(n).zfill(2)}_{tail}.json"
+            if not ntpath.exists(res):
+                break
+
+    return res
+
+def dir_or_json(filepath):
+    return npath.isdir(filepath) or filepath.endswith('.json')
 
 def hmorph_rsa_hash(filepath, euler_function):
     """An RSA-based homomorphic hash function
