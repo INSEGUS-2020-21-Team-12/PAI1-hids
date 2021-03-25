@@ -11,8 +11,8 @@ from reportlab.lib.colors import Color, HexColor, green, black
 import matplotlib.pyplot as plt
 from reportlab.lib.utils import ImageReader
 
-#Cálculo del hash de un único fichero
 def hashficherosha256(rutafichero):
+  """Cálculo del hash de un único fichero"""
   try:
     hash = hl.sha256()
     with open(rutafichero, "rb") as f: #rb: r - read, b - binary mode
@@ -61,8 +61,8 @@ def buscarOCrearFicheroHashes(rutaCarpeta):
     serializarDiccionarioHashes(rutaFicheroHashes, hids_hash_database)
   return hids_hash_database
 
-#Comprueba la integridad de los ficheros
 def comprobarintegridad(dir, sortedDict):
+ """Comprueba la integridad de los ficheros"""
  numFicherosTotal = 0
  numFicherosCorrompidos = 0
  for key in sortedDict.keys():

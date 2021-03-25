@@ -5,7 +5,7 @@ import sys
 from cmd2.constants import (
     MULTILINE_TERMINATOR,
 )
-from hidsegus.core import pdp_json, utils
+from hidsegus.core import pdp_json, utils, hids_runner
 
 class HIDSegus(cmd2.Cmd):
     """HIDSEGUS: A Host Intrusion Detection Systems made in python by INSEGUS ST 12 2020-21"""
@@ -106,6 +106,11 @@ class HIDSegus(cmd2.Cmd):
         else:
             self.stdout.write(f"The result of the challenge was not correct.\n")
             self.stdout.write(f"The file '{filepath}' might be corrupted.\n")
+
+    def do_start(self, args):
+        """Start the HIDS system"""
+        hids_runner.run()
+
 
 def run():
     cli = HIDSegus()
