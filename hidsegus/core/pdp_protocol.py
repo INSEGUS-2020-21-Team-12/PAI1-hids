@@ -1,6 +1,6 @@
 # Provable Data Protection Protocol
 import random
-from resource import *
+#from resource import *
 from cryptography.hazmat.primitives.asymmetric import rsa
 from hidsegus.core import utils
 
@@ -72,9 +72,9 @@ def response(filepath, b_token, n_modulo):
   file_intbytes = utils.filebytes_to_int(filepath)
   print('[pdp_response] pow(b, file_intbytes, n)...')
   pdp_result = pow(b_token, file_intbytes, n_modulo)
-  print(f'CPU execution time: {getrusage(RUSAGE_SELF).ru_utime}')
-  print(f'Memory size (unshared): {getrusage(RUSAGE_SELF).ru_idrss}')
-  print(f'Memory size (shared): {getrusage(RUSAGE_SELF).ru_ixrss}')
+#   print(f'CPU execution time: {getrusage(RUSAGE_SELF).ru_utime}')
+#   print(f'Memory size (unshared): {getrusage(RUSAGE_SELF).ru_idrss}')
+#   print(f'Memory size (shared): {getrusage(RUSAGE_SELF).ru_ixrss}')
   return pdp_result
 
 def verification(b_token, hmorph_hash, n_modulo):
