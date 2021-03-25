@@ -68,13 +68,9 @@ def response(filepath, b_token, n_modulo):
   -------
       pdp_result : int
           The result of computing the PDP challenge"""
-  # Se excluyen los primeros y ultimos n/10, de forma arbitraria
+
   file_intbytes = utils.filebytes_to_int(filepath)
-  print('[pdp_response] pow(b, file_intbytes, n)...')
   pdp_result = pow(b_token, file_intbytes, n_modulo)
-#   print(f'CPU execution time: {getrusage(RUSAGE_SELF).ru_utime}')
-#   print(f'Memory size (unshared): {getrusage(RUSAGE_SELF).ru_idrss}')
-#   print(f'Memory size (shared): {getrusage(RUSAGE_SELF).ru_ixrss}')
   return pdp_result
 
 def verification(b_token, hmorph_hash, n_modulo):

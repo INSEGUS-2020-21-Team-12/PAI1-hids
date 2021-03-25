@@ -4,6 +4,8 @@ from sortedcontainers import SortedDict
 from datetime import datetime
 import os
 import pickle
+import time
+import sys
 #Imports registro mensual
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
@@ -88,7 +90,12 @@ def registroMensual(numFicherosTotal, numFicherosCorrompidos):
   porcentajes = [(numFicherosTotal-numFicherosCorrompidos)/numFicherosTotal, numFicherosCorrompidos/numFicherosTotal]
   colores = ['#00C90C','#DC0000']
   plt.pie(porcentajes, colors = colores, startangle=90, explode = (0.1,0.1), radius = 1.2, autopct = '%1.2f%%')
+  
+  #https://stackoverflow.com/questions/62084819/exception-in-tkinter-callback-using-shap
+  plt.gcf().canvas.start_event_loop(sys.float_info.min)
+  
   plt.savefig("IntegridadFicheros.jpg", bbox_inches='tight',)
+  plt.clf()
 
   now = datetime.now()
   date_report=now.strftime('%m-%Y')
@@ -125,3 +132,5 @@ def registroMensual(numFicherosTotal, numFicherosCorrompidos):
   c.drawImage(reporte, 175, h-730, width=220, height=220)
   c.drawImage(logo, 175, h-290)
   c.save()
+  #time.sleep(5)
+  os.remove(rutaPrograma+'/IntegridadFicheros.jpg')

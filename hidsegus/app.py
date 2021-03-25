@@ -2,16 +2,15 @@
 import cmd2, functools
 import argparse
 import sys
-from cmd2.constants import (
-    MULTILINE_TERMINATOR,
-)
+import time
 from hidsegus.core import pdp_json, utils, hids_runner
 
 class HIDSegus(cmd2.Cmd):
     """HIDSEGUS: A Host Intrusion Detection Systems made in python by INSEGUS ST 12 2020-21"""
     
     prompt = 'HIDSEGUS >'
-    PDP_PROTOCOL = 'Proof of Data Possesion'
+    PDP_PROTOCOL = '(PDP) Proof of Data Possesion'
+    HIDS = '(HIDS) Host Intrusion Detection System'
     OTHER = 'Other'
     def __init__(self):
         """Initialize the base class as well as this one"""
@@ -39,6 +38,7 @@ class HIDSegus(cmd2.Cmd):
     def do_rsahash(self, args):
         """Generate a homomorphic hash of a file and store it as a .json"""
         # rsahash sampledir/PAI-1-integridad.pdf
+        started_time = time.process_time()
         filepath = args.filepath
         keysize = args.keysize
         output = args.output
@@ -47,7 +47,9 @@ class HIDSegus(cmd2.Cmd):
         self.stdout.write(f"Homomorphic hash generated for '{filepath}'.\n")
         self.stdout.write(f"Keep the '{json_output}' JSON-file private.\n")
         self.stdout.write("\n")
-        self.stdout.write(f"Generate a challenge with: > request {json_output}\n")
+        elapsed_time = time.process_time() - started_time
+        self.stdout.write(f"Executed in {elapsed_time:9.3f}s.\n")
+        self.stdout.write(f"Generate a challenge with: \n   > request {json_output}\n")
         self.stdout.write("\n")
 
     # ----- request_parser for do_request()
@@ -59,6 +61,7 @@ class HIDSegus(cmd2.Cmd):
     @cmd2.with_argparser(request_parser)
     def do_request(self, args):
         """Generate a challenge to the server for a Proof of Data Possesion"""
+        started_time = time.process_time()
         jsonfile = args.jsonfile
         output = args.output
 
@@ -66,7 +69,9 @@ class HIDSegus(cmd2.Cmd):
         self.stdout.write(f"PDP request generated for file '{filepath}'.\n")
         self.stdout.write(f"Resquest file generated as '{json_output}'.\n")
         self.stdout.write("\n")
-        self.stdout.write(f"Solve the challenge with command: > proof {json_output}\n")
+        elapsed_time = time.process_time() - started_time
+        self.stdout.write(f"Executed in {elapsed_time:9.3f}s.\n")
+        self.stdout.write(f"Solve the challenge with command: \n   > proof {json_output}\n")
         self.stdout.write("\n")
 
     # ----- request_parser for do_proof()
@@ -78,13 +83,18 @@ class HIDSegus(cmd2.Cmd):
     @cmd2.with_argparser(proof_parser)
     def do_proof(self, args):
         """Solve a challenge for a Proof of Data Possesion verification"""
+        started_time = time.process_time()
         jsonfile = args.jsonfile
         output = args.output
 
+        self.stdout.write('Calculating pow(b, file_intbytes, n)\n')
+        self.stdout.write('Please be patient...\n')
         json_output, filepath =  pdp_json.response(jsonfile, output)
         self.stdout.write(f"PDP response generated as '{json_output}'.\n")
         self.stdout.write("\n")
-        self.stdout.write(f"Verify the result: > verify {json_output} {utils.filename(filepath)}.json\n")
+        elapsed_time = time.process_time() - started_time
+        self.stdout.write(f"Executed in {elapsed_time:9.3f}s.\n")
+        self.stdout.write(f"Verify the result: \n   > verify {json_output} {utils.filename(filepath)}.json\n")
         self.stdout.write("\n")
 
     # ----- verify_parser for do_verify()
@@ -96,6 +106,7 @@ class HIDSegus(cmd2.Cmd):
     @cmd2.with_argparser(verify_parser)
     def do_verify(self, args):
         """Check the result of the Proof of Data Possesion challenge"""
+        started_time = time.process_time()
         json_pdp_response = args.json_pdp_response
         json_hashfile = args.json_hashfile
 
@@ -106,7 +117,10 @@ class HIDSegus(cmd2.Cmd):
         else:
             self.stdout.write(f"The result of the challenge was not correct.\n")
             self.stdout.write(f"The file '{filepath}' might be corrupted.\n")
+        elapsed_time = time.process_time() - started_time
+        self.stdout.write(f"Executed in {elapsed_time:9.3f}s.\n")
 
+    @cmd2.with_category(HIDS)
     def do_start(self, args):
         """Start the HIDS system"""
         hids_runner.run()
