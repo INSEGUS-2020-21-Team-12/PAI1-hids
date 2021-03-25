@@ -43,6 +43,7 @@ class HIDSegus(cmd2.Cmd):
         keysize = args.keysize
         output = args.output
 
+        self.stdout.write("\n")
         json_output = pdp_json.rsa_hash(filepath, output, keysize)
         self.stdout.write(f"Homomorphic hash generated for '{filepath}'.\n")
         self.stdout.write(f"Keep the '{json_output}' JSON-file private.\n")
@@ -65,6 +66,7 @@ class HIDSegus(cmd2.Cmd):
         jsonfile = args.jsonfile
         output = args.output
 
+        self.stdout.write("\n")
         json_output, filepath =  pdp_json.request(jsonfile, output)
         self.stdout.write(f"PDP request generated for file '{filepath}'.\n")
         self.stdout.write(f"Resquest file generated as '{json_output}'.\n")
@@ -86,7 +88,8 @@ class HIDSegus(cmd2.Cmd):
         started_time = time.process_time()
         jsonfile = args.jsonfile
         output = args.output
-
+        
+        self.stdout.write("\n")
         self.stdout.write('Calculating pow(b, file_intbytes, n)\n')
         self.stdout.write('Please be patient...\n')
         json_output, filepath =  pdp_json.response(jsonfile, output)
@@ -110,15 +113,17 @@ class HIDSegus(cmd2.Cmd):
         json_pdp_response = args.json_pdp_response
         json_hashfile = args.json_hashfile
 
+        self.stdout.write("\n")
         proof_succeded, filepath = pdp_json.verification(json_pdp_response, json_hashfile)
         if proof_succeded:
             self.stdout.write(f"The result of the Proof of Data challenge was correct.\n")
             self.stdout.write(f"The server confirmed the integrity of the file '{filepath}'.\n")
         else:
-            self.stdout.write(f"The result of the challenge was not correct.\n")
-            self.stdout.write(f"The file '{filepath}' might be corrupted.\n")
+            self.perror(f"The result of the challenge was not correct.\n")
+            self.perror(f"The file '{filepath}' might be corrupted.\n")
         elapsed_time = time.process_time() - started_time
         self.stdout.write(f"Executed in {elapsed_time:9.3f}s.\n")
+        self.stdout.write("\n")
 
     @cmd2.with_category(HIDS)
     def do_start(self, args):
